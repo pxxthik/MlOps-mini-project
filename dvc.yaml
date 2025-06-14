@@ -1,0 +1,53 @@
+stages:
+  data_ingestion:
+    cmd: python -m src.data.data_ingestion
+    deps:
+    - src/data/data_ingestion.py
+    params:
+    - data_ingestion.random_state
+    - data_ingestion.test_size
+    outs:
+    - data/raw/train.csv
+    - data/raw/test.csv
+  
+  preprocessing:
+    cmd: python -m src.data.preprocessing
+    deps:
+    - src/data/preprocessing.py
+    - data/raw/train.csv
+    - data/raw/test.csv
+    outs:
+    - data/interim/train.csv
+    - data/interim/test.csv
+  
+  feature_engineering:
+    cmd: python -m src.features.feature_engineering
+    params:
+    - feature_engineering.max_features
+    - feature_engineering.ngram_range
+    deps:
+    - src/features/feature_engineering.py
+    - data/interim/train.csv
+    - data/interim/test.csv
+    outs:
+    - data/features/train.csv
+    - data/features/test.csv
+  
+  model_building:
+    cmd: python -m src.models.model_building
+    deps:
+    - src/models/model_building.py
+    - data/features/train.csv
+    params:
+    - model_building.C
+    - model_building.solver
+    - model_building.penalty
+    outs:
+    - models/model.pkl
+  
+  model_evaluation:
+    cmd: python -m src.models.model_evaluation
+    deps:
+    - src/models/model_evaluation.py
+    - models/model.pkl
+    - data/features/test.csv
