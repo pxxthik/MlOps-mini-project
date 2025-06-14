@@ -51,3 +51,12 @@ stages:
     - src/models/model_evaluation.py
     - models/model.pkl
     - data/features/test.csv
+    outs:
+    - reports/experiment_info.json
+  
+  register_model:
+    cmd: python -m src.models.register_model
+    deps:
+    - src/models/register_model.py
+    - models/model.pkl
+    - reports/experiment_info.json
